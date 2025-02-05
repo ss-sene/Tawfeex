@@ -1,6 +1,6 @@
 import api from '../api';
 
-export const getTrips = async () => {
+const getTrips = async () => {
     try {
         const response = await api.get('/trips');
         return response.data;
@@ -10,7 +10,7 @@ export const getTrips = async () => {
     }
 };
 
-export const createTrip = async (tripData: any) => {
+const createTrip = async (tripData: any) => {
     try {
         const response = await api.post('/trips', tripData);
         return response.data;
@@ -19,3 +19,8 @@ export const createTrip = async (tripData: any) => {
         throw error;
     }
 };
+
+export default {
+    getTrips,
+    createTrip,
+}

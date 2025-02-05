@@ -1,44 +1,67 @@
-import {StyleSheet, SafeAreaView, Text, ImageBackground, View, ScrollView, TouchableOpacity} from 'react-native';
-
+import {StyleSheet, SafeAreaView, Text, ImageBackground, View, ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native';
 import background from '@/assets/images/background.jpg';
 import trips from "@/constants/trips";
 import {FontAwesome5} from "@expo/vector-icons";
 import {router} from "expo-router";
+import {useEffect, useState} from "react";
+import ApiTrips from '@/app/(api)/trips/trips.api';
 
 const HomeScreen = () => {
+    const [trips, setTrips] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTrips = async () => {
+            try {
+                const data = await ApiTrips.getTrips();
+                setTrips(data);
+            } catch (error) {
+                console.error('Erreur:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTrips();
+    }, []);
+
     return (
         <ImageBackground source={background} style={styles.background}>
             <SafeAreaView style={styles.safeArea}>
-                <ScrollView style={styles.scrollView}>
-                    {trips.map((item) => (
-                        <TouchableOpacity key={item.id} style={styles.card}>
-                            <View style={styles.cardRow}>
-                                {/* Departure Time */}
-                                <View style={styles.departureTime}>
-                                    <Text style={styles.textSmallGray}>{item.heure_depart}</Text>
-                                </View>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#FFA500" />
+                ) : (
+                    <ScrollView style={styles.scrollView}>
+                        {trips.map((item) => (
+                            <TouchableOpacity key={item.id} style={styles.card}>
+                                <View style={styles.cardRow}>
+                                    {/* Departure Time */}
+                                    <View style={styles.departureTime}>
+                                        <Text style={styles.textSmallGray}>{item.heure_depart}</Text>
+                                    </View>
 
-                                {/* Icons */}
-                                <View style={styles.iconsContainer}>
-                                    <FontAwesome5 name="circle" size={12} color="#000" />
-                                    <View style={styles.verticalLine} />
-                                    <FontAwesome5 name="square" size={12} color="#000" />
-                                </View>
+                                    {/* Icons */}
+                                    <View style={styles.iconsContainer}>
+                                        <FontAwesome5 name="circle" size={12} color="#000" />
+                                        <View style={styles.verticalLine} />
+                                        <FontAwesome5 name="square" size={12} color="#000" />
+                                    </View>
 
-                                {/* Locations */}
-                                <View style={styles.locationsContainer}>
-                                    <Text style={styles.textLargeBold}>{item.depart}</Text>
-                                    <Text style={styles.textSmallGray}>{item.arrivée}</Text>
-                                </View>
+                                    {/* Locations */}
+                                    <View style={styles.locationsContainer}>
+                                        <Text style={styles.textLargeBold}>{item.depart}</Text>
+                                        <Text style={styles.textSmallGray}>{item.destination}</Text>
+                                    </View>
 
-                                {/* Price */}
-                                <View style={styles.priceContainer}>
-                                    <Text style={styles.textLargeBold}>{item.prix} FCFA</Text>
+                                    {/* Price */}
+                                    <View style={styles.priceContainer}>
+                                        <Text style={styles.textLargeBold}>{item.prix} FCFA</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                )}
                 <View style={styles.footer}>
                     <TouchableOpacity
                         onPress={() => {
